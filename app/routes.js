@@ -31,15 +31,18 @@ evrout.get('/events', async (req, res) => {
 })
 
 //add new event
-evrout.post('/events', (req, res) => {
-  const newevent = new eventmodel(doc1)
-  newevent.save()
-  .then(savedevent => {
-    console.log('event added successfully:', savedevent);
-  })
-  .catch(err => {
-    console.error('Error saving record:', err);
-  });
+evrout.post('/events', async (req, res) => {
+  reqbody = req.body
+  console.log(reqbody)
+  if(Object.keys(reqbody).length !== 0)
+  { 
+    const eventdata = new eventmodel(req.body)
+    const newevent = await eventmodel.create(eventdata)
+    console.log('Event added successfully:', newevent);
+    res.end('Event added successfully');
+  }
+  else
+    res.end("no record")
 })
 
 //update event
@@ -47,8 +50,8 @@ evrout.put('/events/:id', async (req, res) => {
   try
   {
     filter = {_id : req.params.id}
-    newdata = doc2
-    console.log(newdata)
+    newdata = req.body
+    console.log("reqbody:",req.body)
 
     const updateddata = await eventmodel.findOneAndUpdate(filter,newdata,{new : true})
     console.log(updateddata)
@@ -77,8 +80,7 @@ evrout.delete('/events/:id', async (req, res) => {
     const filter = {_id : req.params.id}
     delevent = await eventmodel.findOneAndDelete(filter)
     console.log(delevent)
-    finddelevent = await eventmodel.find(filter).exec()
-    if(!finddelevent){
+    if(delevent){
       res.end('record deleted successfully')
     }
     else{
