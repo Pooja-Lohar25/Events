@@ -71,8 +71,23 @@ evrout.put('/events/:id', async (req, res) => {
 })
 
 //delete an event
-evrout.delete('/events/:id', (req, res) => {
-
+evrout.delete('/events/:id', async (req, res) => {
+  try
+  {
+    const filter = {_id : req.params.id}
+    delevent = await eventmodel.findOneAndDelete(filter)
+    console.log(delevent)
+    finddelevent = await eventmodel.find(filter).exec()
+    if(!finddelevent){
+      res.end('record deleted successfully')
+    }
+    else{
+      res.end("could not delete")
+    }
+  }catch(err){
+    console.log(err)
+    res.end("someting went wrong")
+  }
 })
 
 
